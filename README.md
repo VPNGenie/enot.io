@@ -15,84 +15,16 @@ const client = new EnotClient({
 ## Пример использование:
 ### Создание платежа
 ```javascript
-const invoice = await client.getPayments().create({ amount: 100, order_id: 'ORD-123' });
-
-console.log(invoice)
-// {
-//  "amount": 10,
-//  "order_id": "1",
-//  "email": "test.test@example.com",
-//  "currency": "RUB",
-//  "custom_fields": "{\"order\": \"74056\"}",
-//  "comment": "string",
-//  "fail_url": "https://enot.io/fail",
-//  "success_url": "https://enot.io/success",
-//  "hook_url": "https://enot.io/hook",
-//  "shop_id": "33908637-00e0-4f0d-a27d-d1d87d2f5033",
-//  "expire": 300,
-//  "include_service": [
-//   "card"
-//  ],
-//  "exclude_service": [
-//   "qiwi"
-//  ]
-// }
+await client.getPayments().create({ amount: 100, order_id: 'ORD-123' });
 ```
 ### Получение информации о платеже
 ```javascript
-const info = await client.getPayments().getInfo({ invoice_id: 'uuid' })
+ await client.getPayments().getInfo({ invoice_id: 'uuid' })
 
-console.log(info);
-// {
-//  "data": {
-//   "invoice_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-//   "order_id": "123",
-//   "shop_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-//   "status": "created",
-//   "invoice_amount": 0,
-//   "credited": 0,
-//   "currency": "RUB",
-//   "pay_service": "card",
-//   "commission_amount": 0,
-//   "commission_percent": 0,
-//   "shop_commission_amount": 0,
-//   "shop_commission_percent": 0,
-//   "user_commission_amount": 0,
-//   "user_commission": 0,
-//   "custom_field": [
-//    "paymentId": "123"
-//   ]
-//   "created_at": "2017-07-21 10:00",
-//   "expired_at": "2017-07-21 10:00",
-//   "paid_at": "2017-07-21 10:00"
-//  }
-//  "status": 200,
-//  "status_check": true
-// }
 ```
 ### Получение доступных методов оплаты
 ```javascript
-const tariffs = await client.getPayments().getPaymentTariffs();
-
-console.log(tariffs);
-// {
-//  "data": {
-//   "tariffs": [
-//    {
-//     "percent": 0,
-//     "max_sum": 0,
-//     "shop_percent": 0,
-//     "user_percent": 0,
-//     "service": "card",
-//     "service_label": "Банковская карта",
-//     "currency": "RUB",
-//     "status": "string"
-//    }
-//   ]
-//  },
-//  "status": 200,
-//  "status_check": true
-// }
+await client.getPayments().getPaymentTariffs();
 ```
 ### Обработка webhook
 ```javascript
@@ -113,71 +45,37 @@ app.post('/webhook/enot', (req: Request, res: Response) => {
 ```
 ### Получение баланса
 ```javascript
-console.log(
-    client.getPayout().getBalance('userId')
-)
-// {
-//  "data": {
-//   "balance": 0,
-//   "active_balance": 0,
-//   "freeze_balance": 0
-//  },
-//  "status": 200,
-//  "status_check": true
-// }
-
+client.getPayout().getBalance('userId')
 ```
 ### Получение информации о выводе
 ```javascript
-const info = await client.getPyout().getInfo({ id: 'id' })
-
-console.log(info);
-// {
-//  "data": {
-//   "payoff_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-//   "status": "success",
-//   "service": "card",
-//   "wallet": "4000000000000000",
-//   "type": "payoff",
-//   "subtract": "balance",
-//   "amount": 10,
-//   "amount_withdraw_rub": 11,
-//   "commission_rub": 1,
-//   "receive_currency": "RUB",
-//   "amount_receive": 10,
-//   "comment": "Test payoff",
-//   "created_at": "2023-03-21 12:00",
-//   "order_id": "1",
-//   "paid_at": "2023-03-21 14:00"
-//  },
-//  "status": 200,
-//  "status_check": true
-// }
+await client.getPyout().getInfo({ id: 'id' })
 ```
 ### Получение списка доступных банков для вывода через СБП
 ```javascript
-const list = client.getPayout().getSBPBankList('userId');
+await lient.getPayout().getSBPBankList('userId');
+```
+## Создание платежа h2h
+```javascript
+// Создание инвойса, он же await client.getPayments().create()
+const invoice = await client.getH2H().createInvoice({
+    amount: 100, 
+    order_id: 'ORD-123',
+    include_service: ['p2p_card'],
+    type: 'direct'
+});
 
-console.log(list)
-// {
-//  "data": {
-//   "payoff_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-//   "status": "success",
-//   "service": "card",
-//   "wallet": "4000000000000000",
-//   "type": "payoff",
-//   "subtract": "balance",
-//   "amount": 10,
-//   "amount_withdraw_rub": 11,
-//   "commission_rub": 1,
-//   "receive_currency": "RUB",
-//   "amount_receive": 10,
-//   "comment": "Test payoff",
-//   "created_at": "2023-03-21 12:00",
-//   "order_id": "1",
-//   "paid_at": "2023-03-21 14:00"
-//  },
-//  "status": 200,
-//  "status_check": true
-// }
+if (invoice.data) {
+    // Создание H2H платежа
+    const payment = await client.getH2H().createH2HPayment({
+        invoice_id: invoice.data.id,
+        ip: '127.0.0.0',
+        user_agent: 'Mizila/5.0',
+        payment_data: { bank: 'sber' }
+    });
+
+    if (payment.data) {
+        console.log('Платеж H2H создан:', payment.data);
+    }
+}
 ```

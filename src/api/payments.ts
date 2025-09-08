@@ -21,6 +21,7 @@ export class Payments {
      * @returns {Promise<PaymentResponse>} 
      */
     async create (params: CreatePaymentParams): Promise<PaymentResponse> {
+        if (!this.options.shopId) throw new Error('shopId is required in options');
         const payload: Record<string, any> = {
             ...params,
             shop_id: this.options.shopId

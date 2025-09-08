@@ -100,3 +100,37 @@ export interface PayoutInfoParams {
 export interface PayoutInfoResponse {
     
 }
+
+export interface CreateH2HInvoiceFields {
+    type: 'direct' | 'link',
+    include_service: string[]
+}
+
+export type CreateH2HInvoice = CreatePaymentParams & Partial<CreateH2HInvoiceFields>
+
+export interface H2HPaymentParams {
+    invoice_id: string,
+    ip: string,
+    user_agent: string,
+    payment_data: {
+        bank: 'sber' | 'tinkoff'
+    }
+}
+
+export interface H2HPaymentResponse {
+    data: {
+        step_two_type: string,
+        wallet: string,
+        receiver_name: string,
+        bank: string,
+        amount: string,
+        time_end: string,
+        url: string | null,
+        type: string,
+        is_redirect: boolean,
+        fingerprint: boolean,
+        is_need_get_info: boolean
+    },
+    status: number,
+    status_check: boolean
+}

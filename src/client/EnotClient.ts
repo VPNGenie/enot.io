@@ -4,6 +4,7 @@ import { Http } from "../utils/http.js";
 import type { SDKOptions } from "../types/index.js";
 import type { Request } from "express";
 import { createHmac, timingSafeEqual } from "crypto";
+import { H2H } from "../api/h2h.js";
 
 export class EnotClient {
     private payments: Payments;
@@ -15,6 +16,8 @@ export class EnotClient {
     private options: SDKOptions;
 
     private http: Http;
+
+    private h2h: H2H;
     
     constructor (options: SDKOptions) {
         if (!options.apiKey) throw new Error('apiKey is required');
@@ -26,6 +29,16 @@ export class EnotClient {
 
         this.payments = new Payments(this.http, this.options);
         this.payout = new Payout(this.http, this.options);
+        this.h2h = new H2H(this.http, this.options);
+    }
+
+    /**
+     * Запрос на создание h2h
+     * @returns {H2H} 
+     * @memberof EnotClient
+     */
+    getH2H (): H2H {
+        return this.h2h;
     }
     
     /**
