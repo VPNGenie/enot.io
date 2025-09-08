@@ -1,9 +1,8 @@
-import type { AxiosInstance } from "axios";
 import type { SDKOptions } from "../types/index.js";
 import axios from "axios";
 
 export class Http {
-    private axios: AxiosInstance
+    private axios: ReturnType<typeof axios.create>
 
     constructor (
         baseUrl: string,
