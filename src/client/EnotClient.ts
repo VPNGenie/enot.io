@@ -25,7 +25,7 @@ export class EnotClient {
         this.http = new Http(options.baseUrl ?? this.baseUrl);
 
         this.payments = new Payments(this.http, this.options);
-        this.payout = new Payout();
+        this.payout = new Payout(this.http, this.options);
     }
     
     /**

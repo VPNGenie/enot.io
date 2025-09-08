@@ -75,3 +75,28 @@ export type PaymentTariffStatus = 'enabled' | 'disabled';
 export interface PaymentTariffsResponse {
     tariffs: PaymentTariff[]
 }
+
+export interface BalanceResponse {
+    balance: number, // Общий баланс
+    active_balance: number, // Баланс доступный для вывода
+    freeze_balance: number // Баланс в заморозке
+}
+
+export interface SBPBank {
+    id: string, // ID банка в системе быстрых платежей (СБП)
+    name: string // Наименование банка
+}
+
+export interface SBPBankListResponse {
+    banls: SBPBank[]
+}
+
+export interface PayoutInfoParams {
+    user_id: string,
+    id?: string,
+    order_id?: string
+}
+
+export interface PayoutInfoResponse {
+    
+}
